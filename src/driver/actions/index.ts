@@ -41,7 +41,12 @@ export { MessagingActions } from './messages';
 export type { SendMessageResult, ConversationSummary, ChatMessage } from './messages';
 
 export { ConnectionActions, MAX_NOTE_LENGTH } from './connections';
-export type { ConnectionRequestResult, PendingRequest } from './connections';
+export type {
+  Connection,
+  ConnectionRequestResult,
+  PendingRequest,
+  SentInvitation,
+} from './connections';
 
 export { ApplyActions, normalizeJobUrl, answerKey } from './apply';
 export type { ApplyResult, ApplyOptions, ApplicationQuestion, QuestionKind } from './apply';

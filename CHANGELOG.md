@@ -1,3 +1,14 @@
+## 0.9.0 - 2026-10-08
+
+- feat: `linkedin_get_sent_invitations` lists the connection invitations you sent
+  that are still pending (name, headline, profile URL, "Sent N days ago").
+- feat: `linkedin_get_connections` lists your connections, newest first, with
+  `connectedDate` (YYYY-MM-DD). Together with the sent list it shows who accepted
+  a request and when, which an outreach sequence needs before following up.
+- fix: `linkedin_get_conversations` returned at most the ~10 threads LinkedIn
+  renders first, whatever `limit` asked for. It now scrolls the inbox list to load
+  more (about 20 in practice).
+
 ## Unreleased
 
 - ci: fix the CI workflow, which had failed on every push since 0.6.0. It still

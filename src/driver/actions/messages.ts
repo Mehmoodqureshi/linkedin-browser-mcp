@@ -174,6 +174,7 @@ export class MessagingActions {
     await rateLimitDelay();
 
     await sleep(1500);
+    await this.loadMoreConversations(limit);
     // Conversation rows use obfuscated classes; anchor on the thread link, take
     // its enclosing <li>, and parse the visible text lines:
     //   ["Status is reachable"?, "<Name>", "<date>", "<preview>", <noise...>]
@@ -302,6 +303,48 @@ export class MessagingActions {
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
+
+  /**
+   * The inbox renders about ten rows and loads more as its own list (not the
+   * window) scrolls, so scroll the last row into view until `limit` rows are
+   * present or the list stops growing.
+   */
+  private async loadMoreConversations(limit: number): Promise<void> {
+    const rows = this.page.locator('li.msg-conversation-listitem');
+    let count = await rows.count();
+    for (let round = 0; count > 0 && count < limit && round < 20; round++) {
+      await rows.last().scrollIntoViewIfNeeded().catch(() => undefined);
+      // scrollIntoView alone can stop short of the loader's threshold; push
+      // the list's scrollable ancestor all the way down as well.
+      await this.page
+        .evaluate(() => {
+          const li = document.querySelector('li.msg-conversation-listitem');
+          for (let el = li?.parentElement ?? null; el; el = el.parentElement) {
+            if (el.scrollHeight > el.clientHeight + 10) {
+              const style = getComputedStyle(el).overflowY;
+              if (style === 'auto' || style === 'scroll') {
+                el.scrollTop = el.scrollHeight;
+                return;
+              }
+            }
+          }
+        })
+        .catch(() => undefined);
+      await sleep(800);
+      // Past the first pages the list ends in a "Load more conversations" button.
+      const more = this.page.locator('button:has-text("Load more conversations")').first();
+      if ((await more.count()) > 0) await more.click().catch(() => undefined);
+      await sleep(1200 + Math.floor(Math.random() * 500));
+      let next = await rows.count();
+      if (next === count) {
+        // One retry: the next page sometimes lands a beat after the scroll.
+        await sleep(1500);
+        next = await rows.count();
+        if (next === count) return;
+      }
+      count = next;
+    }
+  }
 
   /** Extracts the thread id from a /messaging/thread/<id>/ URL. */
   private parseConversationId(url: string): string | undefined {

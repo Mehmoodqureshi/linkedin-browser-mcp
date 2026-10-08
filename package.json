@@ -41,7 +41,7 @@
     "typecheck:test": "tsc -p tsconfig.test.json",
     "test:hitl": "ts-node --project tsconfig.json test/hitl/index.ts",
     "test:hitl:all": "ts-node --project tsconfig.json test/hitl/index.ts --include-mutating",
-    "test:unit": "ts-node --project tsconfig.json test/mutation-gate.test.ts && ts-node --project tsconfig.json test/quota.test.ts && ts-node --project tsconfig.json test/tools-catalog.test.ts && ts-node --project tsconfig.json test/tool-surface.test.ts",
+    "test:unit": "ts-node --project tsconfig.json test/mutation-gate.test.ts && ts-node --project tsconfig.json test/quota.test.ts && ts-node --project tsconfig.json test/tools-catalog.test.ts && ts-node --project tsconfig.json test/tool-surface.test.ts && ts-node --project tsconfig.json test/connections-parse.test.ts",
     "gen-icon": "node scripts/gen-icon.js",
     "pack:mcpb": "node scripts/pack-mcpb.js",
     "prepublishOnly": "npm run clean && npm run build"

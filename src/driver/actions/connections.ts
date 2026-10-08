@@ -1,6 +1,6 @@
 /**
- * Connection actions: send / accept / withdraw connection requests and read
- * pending received invitations.
+ * Connection actions: send / accept / withdraw connection requests, read
+ * pending received and sent invitations, and list existing connections.
  *
  * Connecting is the most rate-sensitive LinkedIn action, so every state-
  * mutating step is paced via `rateLimitDelay`. Notes are capped at 300 chars
@@ -48,6 +48,108 @@ export interface PendingRequest {
   name?: string;
   headline?: string;
   profileUrl?: string;
+}
+
+/** A pending invitation YOU sent, from the invitation manager's Sent tab. */
+export interface SentInvitation {
+  profileId?: string;
+  name?: string;
+  headline?: string;
+  profileUrl?: string;
+  /** LinkedIn's relative label, e.g. "Sent 2 weeks ago". */
+  sent?: string;
+}
+
+/** A 1st-degree connection, from My Network > Connections (newest first). */
+export interface Connection {
+  profileId?: string;
+  name?: string;
+  headline?: string;
+  profileUrl?: string;
+  /** LinkedIn's label, e.g. "Connected on October 4, 2026". */
+  connectedOn?: string;
+  /** `connectedOn` as a `YYYY-MM-DD` date, when it parses. */
+  connectedDate?: string;
+}
+
+/** Visible text lines of one list card, keyed by its profile href. */
+interface RawCard {
+  href: string;
+  lines: string[];
+}
+
+const MONTHS = [
+  'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december',
+];
+
+/**
+ * Parses LinkedIn's "Connected on October 4, 2026" label into `2026-10-04`.
+ * Returns undefined for anything else (other locales, relative labels).
+ */
+export function parseConnectedOn(label: string | undefined): string | undefined {
+  const m = (label ?? '').match(/Connected on\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})/i);
+  if (!m) return undefined;
+  const month = MONTHS.indexOf(m[1]!.toLowerCase());
+  if (month < 0) return undefined;
+  const p = (n: number): string => String(n).padStart(2, '0');
+  return `${m[3]}-${p(month + 1)}-${p(Number(m[2]))}`;
+}
+
+/** Extracts the vanity slug from an /in/<slug> URL. */
+function profileIdFrom(href: string): string | undefined {
+  const m = href.match(/\/in\/([^/?#]+)/);
+  return m?.[1];
+}
+
+function absoluteProfileUrl(href: string): string {
+  const abs = href.startsWith('http') ? href : `${LINKEDIN_BASE}${href}`;
+  return abs.split('?')[0] ?? abs;
+}
+
+/** Card lines that are buttons or social proof, never a name or headline. */
+const CARD_NOISE_RE = /^(message|withdraw|ignore|accept|more|remove connection)$|mutual connection/i;
+
+/** Normalizes Sent-tab cards: ["<Name>", "<headline>", "Sent 2 weeks ago", "Withdraw"]. */
+export function parseSentCards(cards: RawCard[]): SentInvitation[] {
+  const out: SentInvitation[] = [];
+  for (const { href, lines } of cards) {
+    const sent = lines.find((l) => /^Sent\b/i.test(l));
+    const meaningful = lines.filter((l) => !CARD_NOISE_RE.test(l) && l !== sent);
+    const name = clean(meaningful[0]);
+    if (!name) continue;
+    const item: SentInvitation = { profileUrl: absoluteProfileUrl(href), name };
+    const id = profileIdFrom(href);
+    if (id) item.profileId = id;
+    const headline = clean(meaningful[1]);
+    if (headline) item.headline = headline;
+    if (sent) item.sent = sent;
+    out.push(item);
+  }
+  return out;
+}
+
+/** Normalizes connection cards: ["<Name>", "<headline>", "Connected on <date>", "Message"]. */
+export function parseConnectionCards(cards: RawCard[]): Connection[] {
+  const out: Connection[] = [];
+  for (const { href, lines } of cards) {
+    const connectedOn = lines.find((l) => /^Connected on\b/i.test(l));
+    const meaningful = lines.filter((l) => !CARD_NOISE_RE.test(l) && l !== connectedOn);
+    const name = clean(meaningful[0]);
+    if (!name) continue;
+    const item: Connection = { profileUrl: absoluteProfileUrl(href), name };
+    const id = profileIdFrom(href);
+    if (id) item.profileId = id;
+    const headline = clean(meaningful[1]);
+    if (headline) item.headline = headline;
+    if (connectedOn) {
+      item.connectedOn = connectedOn;
+      const date = parseConnectedOn(connectedOn);
+      if (date) item.connectedDate = date;
+    }
+    out.push(item);
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -238,6 +340,108 @@ export class ConnectionActions {
       out.push(item);
     }
     return out;
+  }
+
+  // -------------------------------------------------------------------------
+  // getSentInvitations
+  // -------------------------------------------------------------------------
+
+  /** Lists pending invitations YOU sent (invitation manager, Sent tab). */
+  async getSentInvitations(limit: number): Promise<SentInvitation[]> {
+    await navigate(this.page, `${LINKEDIN_BASE}/mynetwork/invitation-manager/sent/`);
+    assertAuthenticated(this.page);
+    await rateLimitDelay();
+    const cards = await this.collectCards(/^Sent\b/i, limit);
+    return parseSentCards(cards).slice(0, limit);
+  }
+
+  // -------------------------------------------------------------------------
+  // getConnections
+  // -------------------------------------------------------------------------
+
+  /**
+   * Lists 1st-degree connections, most recently added first, with the date
+   * each was made. A sent invitation that shows up here was accepted.
+   */
+  async getConnections(limit: number): Promise<Connection[]> {
+    await navigate(this.page, `${LINKEDIN_BASE}/mynetwork/invite-connect/connections/`);
+    assertAuthenticated(this.page);
+    await rateLimitDelay();
+    const cards = await this.collectCards(/^Connected on\b/i, limit);
+    return parseConnectionCards(cards).slice(0, limit);
+  }
+
+  /**
+   * Reads list cards whose text has a line matching `marker`, loading more
+   * until `limit` cards are present or the list stops growing.
+   *
+   * Cards use obfuscated classes, so each one is found from its /in/ link:
+   * walk up to the smallest ancestor that holds a `marker` line and links to
+   * only that one profile. The list can scroll inside a container rather than
+   * the window, so loading more scrolls the last card into view and clicks any
+   * "Show more" / "Load more" button.
+   */
+  private async collectCards(marker: RegExp, limit: number): Promise<RawCard[]> {
+    const read = (): Promise<RawCard[]> =>
+      this.page.evaluate(
+        ({ source, flags }) => {
+          const re = new RegExp(source, flags);
+          const norm = (s: string | null | undefined): string =>
+            (s ?? '').replace(/\s+/g, ' ').trim();
+          const slugOf = (h: string): string => (h.match(/\/in\/([^/?#]+)/) ?? [])[1] ?? '';
+          const root: HTMLElement = document.querySelector('main') ?? document.body;
+          const out: Array<{ href: string; lines: string[] }> = [];
+          const seen = new Set<string>();
+          for (const a of Array.from(root.querySelectorAll('a[href*="/in/"]'))) {
+            const href = (a.getAttribute('href') ?? '').split('?')[0] ?? '';
+            const slug = slugOf(href);
+            if (!slug || seen.has(slug)) continue;
+            let card: HTMLElement | null = a.parentElement;
+            while (card && card !== root) {
+              const lines = (card.innerText ?? '').split('\n').map(norm).filter(Boolean);
+              if (lines.some((l) => re.test(l))) {
+                const slugs = new Set(
+                  Array.from(card.querySelectorAll('a[href*="/in/"]')).map((x) =>
+                    slugOf(x.getAttribute('href') ?? ''),
+                  ),
+                );
+                if (slugs.size === 1) {
+                  seen.add(slug);
+                  out.push({ href, lines: Array.from(new Set(lines)) });
+                }
+                break;
+              }
+              card = card.parentElement;
+            }
+          }
+          return out;
+        },
+        { source: marker.source, flags: marker.flags },
+      );
+
+    let cards = await read();
+    for (let round = 0; cards.length < limit && round < 25; round++) {
+      const before = cards.length;
+      const more = this.page
+        .locator('main button:has-text("Show more"), main button:has-text("Load more")')
+        .first();
+      if ((await more.count()) > 0 && (await more.isVisible().catch(() => false))) {
+        await more.click().catch(() => undefined);
+      } else {
+        const last = this.page.locator('main a[href*="/in/"]').last();
+        await last.scrollIntoViewIfNeeded().catch(() => undefined);
+        await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      }
+      await sleep(1200 + Math.floor(Math.random() * 500));
+      cards = await read();
+      if (cards.length === before) {
+        // One retry: lazy lists sometimes land a beat after the scroll.
+        await sleep(1500);
+        cards = await read();
+        if (cards.length === before) break;
+      }
+    }
+    return cards;
   }
 
   // -------------------------------------------------------------------------

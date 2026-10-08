@@ -129,6 +129,8 @@ All tools are namespaced `linkedin_*`. Auth/status tools work without being logg
 | `linkedin_search_companies` | `query`, `filters?` | Company search; returns name, industry, followers, company URL. |
 | `linkedin_send_message` | `profileUrl`, `message` | Sends a DM to a 1st-degree/open-profile member. Fails clearly if messaging isn't permitted. |
 | `linkedin_send_connection` | `profileUrl`, `note?` (<=300 chars) | Sends a connection request, optionally with a note. Returns outcome: sent / already_sent / already_connected / unavailable. |
+| `linkedin_get_sent_invitations` | `limit?` (default 50) | Lists pending invitations you sent: name, headline, profile URL, "Sent N days ago". |
+| `linkedin_get_connections` | `limit?` (default 40) | Lists your connections, newest first, with `connectedDate` (YYYY-MM-DD). Shows who accepted a request and when. |
 | `linkedin_get_feed` | `limit?` (1–50, default 10) | Reads home-feed posts: author, text, timestamp, like/comment counts, post URL. |
 | `linkedin_get_notifications` | `limit?` (1–50, default 20) | Reads notifications: type, actor, text, timestamp, URL, read/unread. |
 | `linkedin_get_conversations` | – | Lists inbox threads: participant, snippet, conversation id, timestamp, unread state. |

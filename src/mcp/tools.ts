@@ -348,6 +348,39 @@ export const TOOL_DEFINITIONS: ToolDefinition[] = [
     inputSchema: {},
   },
   {
+    name: 'linkedin_get_sent_invitations',
+    description:
+      'List pending connection invitations YOU sent (invitation manager, Sent ' +
+      'tab): name, headline, profile URL, profileId, and the "Sent N days ago" ' +
+      'label. An invitation that drops off this list was either accepted (see ' +
+      'linkedin_get_connections) or withdrawn.',
+    inputSchema: {
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(MAX_RESULT_LIMIT)
+        .describe('Maximum invitations to return (default 50).')
+        .optional(),
+    },
+  },
+  {
+    name: 'linkedin_get_connections',
+    description:
+      'List your 1st-degree connections, most recently added first: name, ' +
+      'headline, profile URL, profileId, and connectedDate (YYYY-MM-DD). Use it ' +
+      'to see who accepted a connection request and when.',
+    inputSchema: {
+      limit: z
+        .number()
+        .int()
+        .min(1)
+        .max(MAX_RESULT_LIMIT)
+        .describe('Maximum connections to return (default 40).')
+        .optional(),
+    },
+  },
+  {
     name: 'linkedin_accept_invitation',
     description:
       'Accept a pending RECEIVED connection invitation, identified by the ' +
@@ -946,6 +979,20 @@ export const TOOL_HANDLERS: Record<string, ToolHandler> = {
   linkedin_get_invitations: async () => {
     const driver = await withAuthedDriver();
     const result = await driver.connections.getConnectionRequests();
+    return jsonResult(result);
+  },
+
+  linkedin_get_sent_invitations: async (args) => {
+    const driver = await withAuthedDriver();
+    const limit = optionalInt(args, 'limit', 1, MAX_RESULT_LIMIT) ?? 50;
+    const result = await driver.connections.getSentInvitations(limit);
+    return jsonResult(result);
+  },
+
+  linkedin_get_connections: async (args) => {
+    const driver = await withAuthedDriver();
+    const limit = optionalInt(args, 'limit', 1, MAX_RESULT_LIMIT) ?? 40;
+    const result = await driver.connections.getConnections(limit);
     return jsonResult(result);
   },
 
