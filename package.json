@@ -1,6 +1,6 @@
 {
   "name": "@mehmoodqureshi/linkedin-mcp",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "LinkedIn automation as an MCP server over stdio. Drives your installed Chrome — no separate app, no browser download.",
   "author": "Mehmood Ur Rehman Qureshi",
   "license": "MIT",
