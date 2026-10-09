@@ -219,6 +219,10 @@ Allowed writes are additionally capped per day — 40 connections, 60 messages, 
 
 ---
 
+## Related
+
+- [MCP Browser Extension](https://mcp-browser-extension.vercel.app) ([chrome-mcp](https://github.com/Mehmoodqureshi/chrome-mcp)): let Claude, Cursor or any MCP agent use the Chrome you are already logged into, with a deny-all domain allowlist.
+
 ## Disclaimer
 
 Automating LinkedIn may violate its Terms of Service and can lead to rate limiting or account restriction. Use a real, consenting account, keep volumes low, and run this only for personal, lawful purposes. You are responsible for how you use it.
