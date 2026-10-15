@@ -1,0 +1,91 @@
+name: Publish
+
+# Configure this package's npm trusted publisher for this repository and
+# publish.yml after its first, fingerprint-approved publication.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+
+      - name: Verify release identity
+        id: meta
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          NAME="$(node -p "require('./package.json').name")"
+          test "$GITHUB_REF_NAME" = "v$VERSION"
+          test "$NAME" = "mcp-linkedin-browser"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run typecheck:test
+      - run: npm run test:unit
+      - run: npm run build
+      - name: Inspect package contents
+        run: npm pack --dry-run
+
+      - name: Build desktop bundle
+        run: npm run pack:mcpb
+
+      - name: Publish to npm
+        shell: bash
+        run: |
+          SPEC="${{ steps.meta.outputs.name }}@${{ steps.meta.outputs.version }}"
+          if npm view "$SPEC" version >/dev/null 2>&1; then
+            echo "$SPEC is already on npm; skipping."
+          else
+            npm publish --access public
+          fi
+
+      - name: Wait for npm to serve the version
+        shell: bash
+        run: |
+          SPEC="${{ steps.meta.outputs.name }}@${{ steps.meta.outputs.version }}"
+          for attempt in $(seq 1 40); do
+            if [ "$(npm view "$SPEC" version --prefer-online 2>/dev/null)" = "${{ steps.meta.outputs.version }}" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::npm does not yet serve $SPEC"
+          exit 1
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          VERSION="${{ steps.meta.outputs.version }}"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            gh release upload "v$VERSION" mcp-linkedin-browser.mcpb --clobber
+            exit 0
+          fi
+          awk -v v="$VERSION" '
+            $0 ~ "^## " v " " { found=1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md
+          gh release create "v$VERSION" mcp-linkedin-browser.mcpb --verify-tag --title "v$VERSION" --notes-file notes.md --latest

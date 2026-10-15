@@ -16,9 +16,9 @@
  *      package.json + package-lock.json.
  *   3. `npm ci --omit=dev` in the stage so ONLY runtime deps land in the bundle
  *      (Chromium download is skipped — the driver is connect-only).
- *   4. Zip the stage into ./linkedin-mcp.mcpb.
+ *   4. Zip the stage into ./mcp-linkedin-browser.mcpb.
  *
- * Output: ./linkedin-mcp.mcpb — double-clickable into Claude Desktop.
+ * Output: ./mcp-linkedin-browser.mcpb — double-clickable into Claude Desktop.
  */
 
 'use strict';
@@ -29,7 +29,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUT = path.join(ROOT, 'linkedin-mcp.mcpb');
+const OUT = path.join(ROOT, 'mcp-linkedin-browser.mcpb');
 
 function log(msg) {
   process.stderr.write(`[pack-mcpb] ${msg}\n`);
@@ -177,7 +177,7 @@ function main() {
   // 2. Stage.
   const stage = fs.mkdtempSync(path.join(os.tmpdir(), 'linkedin-mcpb-'));
   log(`staging in ${stage}`);
-  for (const p of ['manifest.json', 'package.json', 'package-lock.json', 'dist', 'assets', 'resources', 'README.md']) {
+  for (const p of ['manifest.json', 'package.json', 'package-lock.json', 'dist', 'assets', 'resources', 'README.md', 'LICENSE']) {
     copyInto(stage, p, { optional: p === 'resources' || p === 'README.md' });
   }
 

@@ -1,3 +1,14 @@
+## 0.9.1 - 2026-10-15
+
+- Include the MIT license and an original project icon in the desktop bundle.
+- Refresh runtime dependencies and require the patched MCP SDK.
+- Align GitHub repository links with `mcp-linkedin-browser`.
+- Rename the npm package and command to `mcp-linkedin-browser`. Install with
+  `npx -y mcp-linkedin-browser@latest`.
+- Update setup examples and the server identity to the canonical package name.
+- Keep existing tool names, settings and stored data compatible.
+- Publish future approved version tags through npm trusted publishing.
+
 ## 0.9.0 - 2026-10-08
 
 - feat: `linkedin_get_sent_invitations` lists the connection invitations you sent

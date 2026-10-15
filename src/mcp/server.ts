@@ -6,7 +6,7 @@
  * the LinkedIn automation over stdin/stdout using JSON-RPC.
  *
  * Responsibilities:
- *   - construct the `Server` with our identity (`linkedin-driver` / `1.0.0`)
+ *   - construct the `Server` with our identity (the canonical package name and shipped version)
  *     and declare the `tools` capability,
  *   - register every tool from `tools.ts` via `registerTools`,
  *   - install crash-safety so a thrown handler never corrupts the transport,
@@ -32,7 +32,7 @@ import { registerTools } from './tools';
 // Identity
 // ---------------------------------------------------------------------------
 
-const SERVER_NAME = 'linkedin-driver';
+const SERVER_NAME = 'mcp-linkedin-browser';
 
 /**
  * The version advertised in the MCP handshake, read from the shipped

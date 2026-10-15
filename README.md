@@ -1,8 +1,10 @@
-# LinkedIn MCP
+# mcp-linkedin-browser
 
-[![CI](https://github.com/Mehmoodqureshi/linkedin-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Mehmoodqureshi/linkedin-mcp/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/%40mehmoodqureshi%2Flinkedin-mcp?label=npm)](https://www.npmjs.com/package/@mehmoodqureshi/linkedin-mcp)
-[![license](https://img.shields.io/npm/l/%40mehmoodqureshi%2Flinkedin-mcp?label=license)](LICENSE)
+[![CI](https://github.com/Mehmoodqureshi/mcp-linkedin-browser/actions/workflows/ci.yml/badge.svg)](https://github.com/Mehmoodqureshi/mcp-linkedin-browser/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/mcp-linkedin-browser?label=npm)](https://www.npmjs.com/package/mcp-linkedin-browser)
+[![license](https://img.shields.io/npm/l/mcp-linkedin-browser?label=license)](LICENSE)
+
+Upgrading from the previous scoped package: replace the package in your MCP client command with `npx -y mcp-linkedin-browser@latest`. Existing environment settings and saved data remain compatible.
 
 A **standalone MCP server** that drives **LinkedIn** through your **installed Google Chrome** and exposes that automation to **Claude** (Desktop, Code, or any MCP client) over stdio.
 
@@ -28,22 +30,22 @@ Instead of using LinkedIn's (restricted) official API, it logs in as you in a re
 **Claude Code (or any terminal MCP client):**
 
 ```bash
-claude mcp add linkedin -- npx -y @mehmoodqureshi/linkedin-mcp
+claude mcp add linkedin -- npx -y mcp-linkedin-browser@latest
 ```
 
-**Claude Desktop (one-click):** download `linkedin-mcp.mcpb` from Releases and **double-click it** — Claude registers the server, no config editing. Set "Enable write actions" in its config if you want writes.
+**Claude Desktop (one-click):** download `mcp-linkedin-browser.mcpb` from Releases and **double-click it** — Claude registers the server, no config editing. Set "Enable write actions" in its config if you want writes.
 
 **Any other MCP client (Cursor, Windsurf, Cline, VS Code, …):** add the stdio block:
 
 ```json
-{ "mcpServers": { "linkedin": { "command": "npx", "args": ["-y", "@mehmoodqureshi/linkedin-mcp"] } } }
+{ "mcpServers": { "linkedin": { "command": "npx", "args": ["-y", "mcp-linkedin-browser@latest"] } } }
 ```
 
 On the first LinkedIn action a **Chrome window opens** — log in once (2FA/captcha included) and it drives that session from then on. Write actions stay **disabled** until you opt in (see [Write actions are off by default](#write-actions-are-off-by-default)).
 
 ```bash
-npx -y @mehmoodqureshi/linkedin-mcp --help      # usage + config snippet
-npx -y @mehmoodqureshi/linkedin-mcp --version
+npx -y mcp-linkedin-browser@latest --help      # usage + config snippet
+npx -y mcp-linkedin-browser@latest --version
 ```
 
 ---
@@ -80,7 +82,7 @@ MCP clients discover servers from a JSON config — for Claude Desktop:
   "mcpServers": {
     "linkedin": {
       "command": "npx",
-      "args": ["-y", "@mehmoodqureshi/linkedin-mcp"]
+      "args": ["-y", "mcp-linkedin-browser@latest"]
     }
   }
 }
@@ -99,13 +101,13 @@ WSL2 is **not** required — native Windows works. One config change is, though:
   "mcpServers": {
     "linkedin": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "@mehmoodqureshi/linkedin-mcp"]
+      "args": ["/c", "npx", "-y", "mcp-linkedin-browser@latest"]
     }
   }
 }
 ```
 
-Or: `claude mcp add linkedin -- cmd /c npx -y @mehmoodqureshi/linkedin-mcp`
+Or: `claude mcp add linkedin -- cmd /c npx -y mcp-linkedin-browser@latest`
 
 Notes:
 - **Restart the client** after editing the config.
@@ -206,7 +208,7 @@ Opt in with a comma-separated allowlist, or `all` / `*` for everything:
   "mcpServers": {
     "linkedin": {
       "command": "npx",
-      "args": ["-y", "@mehmoodqureshi/linkedin-mcp"],
+      "args": ["-y", "mcp-linkedin-browser@latest"],
       "env": { "LINKEDIN_ALLOW_MUTATIONS": "send_message,react" }
     }
   }
@@ -221,7 +223,7 @@ Allowed writes are additionally capped per day — 40 connections, 60 messages, 
 
 ## Related
 
-- [MCP Browser Extension](https://mcp-browser-extension.vercel.app) ([chrome-mcp](https://github.com/Mehmoodqureshi/chrome-mcp)): let Claude, Cursor or any MCP agent use the Chrome you are already logged into, with a deny-all domain allowlist.
+- [MCP Browser Extension](https://mcp-browser-extension.com) ([mcp-browser-extension](https://github.com/Mehmoodqureshi/mcp-browser-extension)): let Claude, Cursor or any MCP agent use the Chrome you are already logged into, with a deny-all domain allowlist.
 
 ## Disclaimer
 

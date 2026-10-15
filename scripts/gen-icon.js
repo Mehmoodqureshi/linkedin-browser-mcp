@@ -3,9 +3,9 @@
  * Dependency-free icon generator.
  *
  * The repo ships no binary art and the build box has no SVG rasterizer / PIL,
- * so we render the app mark straight into an RGBA pixel buffer and encode a PNG
- * with Node's zlib. The mark is a vertical-gradient rounded square (LinkedIn
- * blue) with a bold white "in" wordmark — the same glyph at every size.
+ * so we render an original project mark into an RGBA pixel buffer and encode a
+ * PNG with Node's zlib. The white stepped M on a green square uses no external
+ * images, fonts, or platform logos. It is covered by the project MIT license.
  *
  * Outputs:
  *   assets/icon.iconset/*.png  (fed to `iconutil` by the caller → icon.icns)
@@ -96,42 +96,27 @@ function aa(dist) {
 /**
  * Render the icon at `size` into an RGBA Uint8Array.
  *
- * Coordinates are normalized by `size` so the mark scales cleanly. The "in"
- * wordmark is built from axis-aligned bars; corners of the background square
+ * Coordinates are normalized by `size` so the mark scales cleanly. The M
+ * monogram is built from axis-aligned bars; corners of the background square
  * are rounded with a signed-distance test + 1px AA.
  */
 function render(size) {
   const px = new Uint8Array(size * size * 4);
   const N = size;
 
-  // Background rounded square (full bleed) with a vertical blue gradient.
+  // Background rounded square with an independent green palette.
   const radius = 0.225 * N;
-  const TOP = [0x0a, 0x66, 0xc2]; // LinkedIn blue
-  const BOT = [0x02, 0x44, 0x83]; // deeper blue
+  const TOP = [0x16, 0x6b, 0x56];
+  const BOT = [0x0c, 0x37, 0x31];
 
-  // "in" wordmark geometry (white), centered.
-  const bw = 0.092 * N; // bar width
-  const xh = 0.30 * N; // x-height
-  const gapIn = 0.072 * N; // gap between i and n
-  const nw = 0.26 * N; // n width (two stems + inner gap)
-  const dotGap = 0.05 * N; // gap between i stem and its dot
-  const cx = N / 2;
-  const cy = N / 2 + 0.02 * N;
-
-  const groupW = bw + gapIn + nw;
-  const sx = cx - groupW / 2; // i stem left
-  const ty = cy - xh / 2; // top of x-height
-  const by = cy + xh / 2; // baseline
-  const nx = sx + bw + gapIn; // n left
-
-  // Bar rectangles (x0,y0,x1,y1) in white.
+  // Original stepped M monogram, drawn with bars instead of a font.
   const bars = [
-    [sx, ty, sx + bw, by], // i stem
-    [sx, ty - dotGap - bw, sx + bw, ty - dotGap], // i dot
-    [nx, ty, nx + bw, by], // n left stem
-    [nx + nw - bw, ty, nx + nw, by], // n right stem
-    [nx, ty, nx + nw, ty + bw], // n shoulder
-  ];
+    [0.24, 0.26, 0.35, 0.74],
+    [0.65, 0.26, 0.76, 0.74],
+    [0.35, 0.34, 0.45, 0.48],
+    [0.55, 0.34, 0.65, 0.48],
+    [0.45, 0.44, 0.55, 0.58],
+  ].map(rect => rect.map(value => value * N));
 
   const inRect = (x, y, r) => x >= r[0] && x < r[2] && y >= r[1] && y < r[3];
 
@@ -168,7 +153,7 @@ function render(size) {
       let b8 = Math.round(lerp(TOP[2], BOT[2], t));
       let a8 = Math.round(bgA * 255);
 
-      // Composite white wordmark on top.
+      // Composite the white monogram on top.
       let mark = 0;
       for (const rect of bars) {
         if (inRect(px0, py0, rect)) {

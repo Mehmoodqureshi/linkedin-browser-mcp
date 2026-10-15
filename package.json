@@ -1,25 +1,26 @@
 {
-  "name": "@mehmoodqureshi/linkedin-mcp",
-  "version": "0.9.0",
-  "description": "LinkedIn automation as an MCP server over stdio. Drives your installed Chrome — no separate app, no browser download.",
+  "name": "mcp-linkedin-browser",
+  "version": "0.9.1",
+  "description": "LinkedIn automation as an MCP server over stdio. Drives your installed Chrome \u2014 no separate app, no browser download.",
   "author": "Mehmood Ur Rehman Qureshi",
   "license": "MIT",
-  "homepage": "https://github.com/Mehmoodqureshi/linkedin-mcp#readme",
+  "homepage": "https://github.com/Mehmoodqureshi/mcp-linkedin-browser#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mehmoodqureshi/linkedin-mcp.git"
+    "url": "git+https://github.com/Mehmoodqureshi/mcp-linkedin-browser.git"
   },
   "bugs": {
-    "url": "https://github.com/Mehmoodqureshi/linkedin-mcp/issues"
+    "url": "https://github.com/Mehmoodqureshi/mcp-linkedin-browser/issues"
   },
   "main": "dist/cli.js",
   "bin": {
-    "linkedin-mcp": "dist/cli.js"
+    "mcp-linkedin-browser": "dist/cli.js"
   },
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public"
@@ -44,10 +45,10 @@
     "test:unit": "ts-node --project tsconfig.json test/mutation-gate.test.ts && ts-node --project tsconfig.json test/quota.test.ts && ts-node --project tsconfig.json test/tools-catalog.test.ts && ts-node --project tsconfig.json test/tool-surface.test.ts && ts-node --project tsconfig.json test/connections-parse.test.ts",
     "gen-icon": "node scripts/gen-icon.js",
     "pack:mcpb": "node scripts/pack-mcpb.js",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepack": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "playwright-core": "^1.49.1",
     "zod": "^4.4.3"
   },
