@@ -1,20 +1,20 @@
 {
-  "name": "mcp-linkedin-browser",
-  "version": "0.9.1",
+  "name": "linkedin-browser-mcp",
+  "version": "0.9.2",
   "description": "LinkedIn automation as an MCP server over stdio. Drives your installed Chrome \u2014 no separate app, no browser download.",
   "author": "Mehmood Ur Rehman Qureshi",
   "license": "MIT",
-  "homepage": "https://github.com/Mehmoodqureshi/mcp-linkedin-browser#readme",
+  "homepage": "https://github.com/Mehmoodqureshi/linkedin-browser-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mehmoodqureshi/mcp-linkedin-browser.git"
+    "url": "git+https://github.com/Mehmoodqureshi/linkedin-browser-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/Mehmoodqureshi/mcp-linkedin-browser/issues"
+    "url": "https://github.com/Mehmoodqureshi/linkedin-browser-mcp/issues"
   },
   "main": "dist/cli.js",
   "bin": {
-    "mcp-linkedin-browser": "dist/cli.js"
+    "linkedin-browser-mcp": "dist/cli.js"
   },
   "files": [
     "dist/**/*.js",

@@ -1,10 +1,10 @@
-# mcp-linkedin-browser
+# linkedin-browser-mcp
 
-[![CI](https://github.com/Mehmoodqureshi/mcp-linkedin-browser/actions/workflows/ci.yml/badge.svg)](https://github.com/Mehmoodqureshi/mcp-linkedin-browser/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/mcp-linkedin-browser?label=npm)](https://www.npmjs.com/package/mcp-linkedin-browser)
-[![license](https://img.shields.io/npm/l/mcp-linkedin-browser?label=license)](LICENSE)
+[![CI](https://github.com/Mehmoodqureshi/linkedin-browser-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Mehmoodqureshi/linkedin-browser-mcp/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/linkedin-browser-mcp?label=npm)](https://www.npmjs.com/package/linkedin-browser-mcp)
+[![license](https://img.shields.io/npm/l/linkedin-browser-mcp?label=license)](LICENSE)
 
-Upgrading from the previous scoped package: replace the package in your MCP client command with `npx -y mcp-linkedin-browser@latest`. Existing environment settings and saved data remain compatible.
+Upgrading from an earlier package name: replace the package in your MCP client command with `npx -y linkedin-browser-mcp@latest`. Existing environment settings and saved data remain compatible.
 
 A **standalone MCP server** that drives **LinkedIn** through your **installed Google Chrome** and exposes that automation to **Claude** (Desktop, Code, or any MCP client) over stdio.
 
@@ -30,22 +30,22 @@ Instead of using LinkedIn's (restricted) official API, it logs in as you in a re
 **Claude Code (or any terminal MCP client):**
 
 ```bash
-claude mcp add linkedin -- npx -y mcp-linkedin-browser@latest
+claude mcp add linkedin -- npx -y linkedin-browser-mcp@latest
 ```
 
-**Claude Desktop (one-click):** download `mcp-linkedin-browser.mcpb` from Releases and **double-click it** — Claude registers the server, no config editing. Set "Enable write actions" in its config if you want writes.
+**Claude Desktop (one-click):** download `linkedin-browser-mcp.mcpb` from Releases and **double-click it** — Claude registers the server, no config editing. Set "Enable write actions" in its config if you want writes.
 
 **Any other MCP client (Cursor, Windsurf, Cline, VS Code, …):** add the stdio block:
 
 ```json
-{ "mcpServers": { "linkedin": { "command": "npx", "args": ["-y", "mcp-linkedin-browser@latest"] } } }
+{ "mcpServers": { "linkedin": { "command": "npx", "args": ["-y", "linkedin-browser-mcp@latest"] } } }
 ```
 
 On the first LinkedIn action a **Chrome window opens** — log in once (2FA/captcha included) and it drives that session from then on. Write actions stay **disabled** until you opt in (see [Write actions are off by default](#write-actions-are-off-by-default)).
 
 ```bash
-npx -y mcp-linkedin-browser@latest --help      # usage + config snippet
-npx -y mcp-linkedin-browser@latest --version
+npx -y linkedin-browser-mcp@latest --help      # usage + config snippet
+npx -y linkedin-browser-mcp@latest --version
 ```
 
 ---
@@ -82,7 +82,7 @@ MCP clients discover servers from a JSON config — for Claude Desktop:
   "mcpServers": {
     "linkedin": {
       "command": "npx",
-      "args": ["-y", "mcp-linkedin-browser@latest"]
+      "args": ["-y", "linkedin-browser-mcp@latest"]
     }
   }
 }
@@ -101,13 +101,13 @@ WSL2 is **not** required — native Windows works. One config change is, though:
   "mcpServers": {
     "linkedin": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "mcp-linkedin-browser@latest"]
+      "args": ["/c", "npx", "-y", "linkedin-browser-mcp@latest"]
     }
   }
 }
 ```
 
-Or: `claude mcp add linkedin -- cmd /c npx -y mcp-linkedin-browser@latest`
+Or: `claude mcp add linkedin -- cmd /c npx -y linkedin-browser-mcp@latest`
 
 Notes:
 - **Restart the client** after editing the config.
@@ -208,7 +208,7 @@ Opt in with a comma-separated allowlist, or `all` / `*` for everything:
   "mcpServers": {
     "linkedin": {
       "command": "npx",
-      "args": ["-y", "mcp-linkedin-browser@latest"],
+      "args": ["-y", "linkedin-browser-mcp@latest"],
       "env": { "LINKEDIN_ALLOW_MUTATIONS": "send_message,react" }
     }
   }

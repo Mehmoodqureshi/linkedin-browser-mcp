@@ -34,7 +34,7 @@ jobs:
           VERSION="$(node -p "require('./package.json').version")"
           NAME="$(node -p "require('./package.json').name")"
           test "$GITHUB_REF_NAME" = "v$VERSION"
-          test "$NAME" = "mcp-linkedin-browser"
+          test "$NAME" = "linkedin-browser-mcp"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
@@ -79,7 +79,7 @@ jobs:
         run: |
           VERSION="${{ steps.meta.outputs.version }}"
           if gh release view "v$VERSION" >/dev/null 2>&1; then
-            gh release upload "v$VERSION" mcp-linkedin-browser.mcpb --clobber
+            gh release upload "v$VERSION" linkedin-browser-mcp.mcpb --clobber
             exit 0
           fi
           awk -v v="$VERSION" '
@@ -88,4 +88,4 @@ jobs:
             found { print }
           ' CHANGELOG.md > notes.md
           test -s notes.md
-          gh release create "v$VERSION" mcp-linkedin-browser.mcpb --verify-tag --title "v$VERSION" --notes-file notes.md --latest
+          gh release create "v$VERSION" linkedin-browser-mcp.mcpb --verify-tag --title "v$VERSION" --notes-file notes.md --latest

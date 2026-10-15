@@ -32,7 +32,7 @@ import { registerTools } from './tools';
 // Identity
 // ---------------------------------------------------------------------------
 
-const SERVER_NAME = 'mcp-linkedin-browser';
+const SERVER_NAME = 'linkedin-browser-mcp';
 
 /**
  * The version advertised in the MCP handshake, read from the shipped

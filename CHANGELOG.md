@@ -1,3 +1,9 @@
+## 0.9.2 - 2026-10-15
+
+- Rename the npm package and CLI to `linkedin-browser-mcp`.
+- Update install commands, desktop bundle naming and release automation.
+- Align repository links with `linkedin-browser-mcp`.
+
 ## 0.9.1 - 2026-10-15
 
 - Include the MIT license and an original project icon in the desktop bundle.

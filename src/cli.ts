@@ -2,7 +2,7 @@
 /**
  * CLI entry point — the `npx`-distributable MCP server.
  *
- *     npx mcp-linkedin-browser@latest
+ *     npx linkedin-browser-mcp@latest
  *
  * This is a pure Node MCP server: it drives your INSTALLED Google Chrome via
  * Playwright (`channel: 'chrome'`) — no bundled/desktop app, and no browser
@@ -33,13 +33,13 @@ function readPkg(): { name?: string; version?: string } {
 }
 
 function printHelp(): void {
-  const { name = 'mcp-linkedin-browser', version = '?' } = readPkg();
+  const { name = 'linkedin-browser-mcp', version = '?' } = readPkg();
   process.stdout.write(
     `${name} v${version} — LinkedIn automation as an MCP server (stdio)\n\n` +
       `Usage:\n` +
-      `  npx mcp-linkedin-browser@latest            Start the MCP server over stdio\n` +
-      `  npx mcp-linkedin-browser@latest --help     Show this help\n` +
-      `  npx mcp-linkedin-browser@latest --version  Print the version\n\n` +
+      `  npx linkedin-browser-mcp@latest            Start the MCP server over stdio\n` +
+      `  npx linkedin-browser-mcp@latest --help     Show this help\n` +
+      `  npx linkedin-browser-mcp@latest --version  Print the version\n\n` +
       `This binary speaks the Model Context Protocol over stdin/stdout, so it is\n` +
       `normally launched by an MCP client (Claude Desktop, Claude Code, etc.)\n` +
       `rather than run by hand. Add it to your client config, e.g.:\n\n` +
@@ -47,7 +47,7 @@ function printHelp(): void {
       `    "mcpServers": {\n` +
       `      "linkedin": {\n` +
       `        "command": "npx",\n` +
-      `        "args": ["-y", "mcp-linkedin-browser@latest"]\n` +
+      `        "args": ["-y", "linkedin-browser-mcp@latest"]\n` +
       `      }\n` +
       `    }\n` +
       `  }\n\n` +

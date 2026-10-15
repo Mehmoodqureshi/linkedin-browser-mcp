@@ -16,9 +16,9 @@
  *      package.json + package-lock.json.
  *   3. `npm ci --omit=dev` in the stage so ONLY runtime deps land in the bundle
  *      (Chromium download is skipped — the driver is connect-only).
- *   4. Zip the stage into ./mcp-linkedin-browser.mcpb.
+ *   4. Zip the stage into ./linkedin-browser-mcp.mcpb.
  *
- * Output: ./mcp-linkedin-browser.mcpb — double-clickable into Claude Desktop.
+ * Output: ./linkedin-browser-mcp.mcpb — double-clickable into Claude Desktop.
  */
 
 'use strict';
@@ -29,7 +29,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
-const OUT = path.join(ROOT, 'mcp-linkedin-browser.mcpb');
+const OUT = path.join(ROOT, 'linkedin-browser-mcp.mcpb');
 
 function log(msg) {
   process.stderr.write(`[pack-mcpb] ${msg}\n`);

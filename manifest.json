@@ -1,8 +1,8 @@
 {
   "dxt_version": "0.1",
-  "name": "mcp-linkedin-browser",
-  "display_name": "MCP LinkedIn Browser",
-  "version": "0.9.1",
+  "name": "linkedin-browser-mcp",
+  "display_name": "LinkedIn Browser MCP",
+  "version": "0.9.2",
   "description": "Drive LinkedIn from Claude via your installed Chrome — view profiles, search people/jobs/companies, message, connect, react, comment, and update your own profile.",
   "long_description": "A standalone MCP server that drives your INSTALLED Google Chrome (no separate app, no browser download). Install in one click; on the first LinkedIn action a Chrome window opens so you log in once, then it drives that session. Write actions are disabled by default and gated behind an explicit opt-in.",
   "author": {
@@ -11,9 +11,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mehmoodqureshi/mcp-linkedin-browser.git"
+    "url": "git+https://github.com/Mehmoodqureshi/linkedin-browser-mcp.git"
   },
-  "homepage": "https://github.com/Mehmoodqureshi/mcp-linkedin-browser",
+  "homepage": "https://github.com/Mehmoodqureshi/linkedin-browser-mcp",
   "icon": "assets/icon.png",
   "server": {
     "type": "node",
