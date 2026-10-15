@@ -1,3 +1,7 @@
+## 0.9.3 - 2026-10-15
+
+- Validate trusted npm publishing from GitHub Actions for the canonical package.
+
 ## 0.9.2 - 2026-10-15
 
 - Rename the npm package and CLI to `linkedin-browser-mcp`.

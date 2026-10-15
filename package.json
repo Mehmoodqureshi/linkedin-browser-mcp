@@ -1,6 +1,6 @@
 {
   "name": "linkedin-browser-mcp",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "LinkedIn automation as an MCP server over stdio. Drives your installed Chrome \u2014 no separate app, no browser download.",
   "author": "Mehmood Ur Rehman Qureshi",
   "license": "MIT",
